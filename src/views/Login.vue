@@ -30,11 +30,27 @@ import axios from "axios";
 
 export default {
   data() {
+    let validatePass = (rule, value, callback) => {
+      if (value !== "admin") {
+        callback(new Error("用户名不正确"));
+      } else {
+        callback();
+      }
+    };
+
+    let validatePass2 = (rule, value, callback) => {
+      if (value !== "123456") {
+        callback(new Error("密码不正确"));
+      } else {
+        callback();
+      }
+    };
     return {
       form: {
         username: "",
         password: ""
       },
+
       formRules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
@@ -43,7 +59,8 @@ export default {
             max: 12,
             message: "用户名长度必须是5到12个字符",
             trigger: "change"
-          }
+          },
+          { validator: validatePass, trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
@@ -52,7 +69,8 @@ export default {
             max: 15,
             message: "密码长度必须是6到15个字符",
             trigger: "change"
-          }
+          },
+          { validator: validatePass2, trigger: "blur" }
         ]
       }
     };
