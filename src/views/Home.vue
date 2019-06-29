@@ -18,13 +18,25 @@
     </el-header>
     <el-container>
       <el-aside width="200px">
+        <!-- 
+          default-active="4"   设置默认高亮的菜单项  赋值的内容为菜单项的index值
+          class="el-menu-vertical-demo"  可以为菜单加上自己的类名
+          @open="handleOpen"    菜单的打开事件
+          @close="handleClose"  菜单的折叠事件
+          background-color="#545c64"  设置菜单的背景颜色
+          text-color="#fff"     设置菜单的文本颜色
+          active-text-color="#ffd04b"   高亮项的文本颜色
+          
+          :router="true"   router属性用来设置是否开启vue-router的模式，如果开启，点击菜单项的时候，会把当前菜单项的index值作为path进行路由跳转
+        -->
         <el-menu
-          default-active="2"
+          :default-active="$route.path"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
           :unique-opened="true"
+          :router="true"
         >
           <el-submenu index="1">
             <template slot="title">
@@ -32,7 +44,7 @@
               <span>用户管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1-1">
+              <el-menu-item index="/use">
                 <i class="el-icon-menu"></i>
                 <span>用户列表</span>
               </el-menu-item>
@@ -45,7 +57,7 @@
               <span>权限管理</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="2-1">
+              <el-menu-item index="/list">
                 <i class="el-icon-menu"></i>
                 <span>角色列表</span>
               </el-menu-item>
@@ -101,7 +113,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
