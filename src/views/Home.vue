@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container id="homebgc">
     <el-header>
       <el-row type="flex" justify="space-between" align="middle">
         <el-col :span="6" class="imagelogo">
@@ -157,5 +157,10 @@ export default {
 }
 .el-menu-vertical-demo.el-menu {
   height: 100%;
+}
+
+#app .el-container.is-vertical {
+  height: 100%;
+  background-color: #eaeef1;
 }
 </style>
