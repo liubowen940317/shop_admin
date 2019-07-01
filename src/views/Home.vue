@@ -11,7 +11,7 @@
         <el-col :span="6">
           <div class="welcome">
             欢迎上海前端39期星曜会员
-            <a href="#" class="tc">退出</a>
+            <a href="#" class="tc" @click="logoutClick">退出</a>
           </div>
         </el-col>
       </el-row>
@@ -122,7 +122,14 @@
 
 <script>
 export default {
-  methods: {}
+  methods: {
+    // 退出功能
+    logoutClick() {
+      // 清除token
+      localStorage.removeItem("token");
+      this.$router.push("/login");
+    }
+  }
 };
 </script>
 

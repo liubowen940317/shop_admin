@@ -44,7 +44,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template v-slot="{row}">
-          <el-button type="primary" plain icon="el-icon-edit" size="mini"></el-button>
+          <el-button type="primary" plain icon="el-icon-edit" size="mini" @click="editUser(row.id)"></el-button>
           <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="delUser(row.id)"></el-button>
           <el-button type="success" plain icon="el-icon-check" size="mini">分配角色</el-button>
         </template>
@@ -67,7 +67,7 @@
           <el-input v-model="addForm.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="addForm.password" autocomplete="off"></el-input>
+          <el-input v-model="addForm.password" autocomplete="off" type="password" show-password></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="addForm.email" autocomplete="off"></el-input>
@@ -79,6 +79,26 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="isAddUser=false">取 消</el-button>
         <el-button type="primary" @click="addClick">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 修改的模态框 -->
+    <el-dialog title="编辑用户" :visible.sync="isEditUser">
+      <el-form :model="editForm" :rules="editRules" ref="editForm" label-width="100px">
+        <el-form-item label="用户名" prop="username">
+          <el-tag type="info" v-text="editForm.username"></el-tag>
+        </el-form-item>
+
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="editForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isEditUser=false">取 消</el-button>
+        <el-button type="primary" @click="editClick">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -127,6 +147,33 @@ export default {
             trigger: "change"
           }
         ],
+        email: [
+          {
+            pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
+            message: "邮箱格式不正确",
+            trigger: "change"
+          }
+        ],
+        mobile: [
+          {
+            pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+            message: "手机号格式不正确",
+            trigger: "change"
+          }
+        ]
+      },
+
+      isEditUser: false,
+
+      // 修改用户的表单数据
+      editForm: {
+        id: 0,
+        username: "",
+        email: "",
+        mobile: ""
+      },
+      // 修改的表单验证
+      editRules: {
         email: [
           {
             pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
@@ -272,6 +319,61 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+
+    // 打开修改功能的模态框
+    async editUser(id) {
+      // 打开模态框
+      this.isEditUser = true;
+      // console.log(id);
+      // 根据id请求数据
+      let res = await this.$http({
+        url: `users/${id}`
+      });
+      if (res.data.meta.status === 200) {
+        this.editForm = res.data.data;
+      }
+    },
+
+    // 确认修改
+    async editClick() {
+      // console.log("修改了");
+      // 先进行表单验证
+      try {
+        await this.$refs.editForm.validate();
+        let res = await this.$http({
+          url: `users/${this.editForm.id}`,
+          method: "put",
+          data: {
+            email: this.editForm.email,
+            mobile: this.editForm.mobile
+          }
+        });
+        // console.log(res);
+        if (res.data.meta.status === 200) {
+          this.$message({
+            message: res.data.meta.msg,
+            type: "success",
+            duration: 1000
+          });
+          // 重新渲染
+          this.getHttp();
+          // 关闭模态框
+          this.isEditUser = false;
+        } else {
+          this.$message({
+            message: res.data.meta.msg,
+            type: "error",
+            duration: 1000
+          });
+        }
+      } catch (error) {
+        this.$message({
+          message: "手机号输入错误",
+          type: "error",
+          duration: 1000
+        });
       }
     }
   }
