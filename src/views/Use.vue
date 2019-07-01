@@ -46,7 +46,13 @@
         <template v-slot="{row}">
           <el-button type="primary" plain icon="el-icon-edit" size="mini" @click="editUser(row.id)"></el-button>
           <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="delUser(row.id)"></el-button>
-          <el-button type="success" plain icon="el-icon-check" size="mini">分配角色</el-button>
+          <el-button
+            type="success"
+            plain
+            icon="el-icon-check"
+            size="mini"
+            @click="allocateUser(row)"
+          >分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -99,6 +105,29 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="isEditUser=false">取 消</el-button>
         <el-button type="primary" @click="editClick">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="isAllocateRoles">
+      <el-form :model="allocateForm" :rules="editRules" ref="allocateForm" label-width="100px">
+        <el-form-item label="用户名" prop="username">
+          <el-tag type="info" v-text="allocateForm.username"></el-tag>
+        </el-form-item>
+        <el-form-item label="角色列表">
+          <el-select v-model="allocateForm.role" placeholder="请选择角色">
+            <el-option
+              v-for="item in roles"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.roleName"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isAllocateRoles=false">取 消</el-button>
+        <el-button type="primary" @click="allocateRolesClick">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -188,11 +217,21 @@ export default {
             trigger: "change"
           }
         ]
-      }
+      },
+      // 分配角色的模态框
+      isAllocateRoles: false,
+      allocateForm: {
+        id: 0,
+        rid: 0,
+        username: ""
+      },
+      // 角色
+      roles: []
     };
   },
   created() {
     this.getHttp();
+    this.render2();
   },
 
   methods: {
@@ -375,6 +414,33 @@ export default {
           duration: 1000
         });
       }
+    },
+
+    // 页面一件来就获取所有的角色列表数据
+    async render2() {
+      let res = await this.$http({
+        url: "/roles"
+      });
+      console.log(res);
+      this.roles = res.data.data;
+      console.log(this.roles);
+    },
+
+    // 打开分配角色的模态框
+    allocateUser(row) {
+      this.isAllocateRoles = true;
+      console.log(row);
+      this.allocateForm.username = row.username;
+      this.allocateForm.id = row.id;
+    },
+    async allocateRolesClick() {
+      // console.log("确认");
+      let res = await this.$http({
+        url: `users/${this.allocateForm.id}/role`,
+        method: "put"
+      });
+      console.log(res);
+      //  this.isAllocateRoles = true;
     }
   }
 };
