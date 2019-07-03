@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import Login from './views/Login.vue'
 import Home from './views/Home.vue'
 import Use from './views/Use.vue'
-import List from './views/List.vue'
+import Roles from './views/Roles.vue'
+import Rights from './views/Rights.vue'
 
 Vue.use(Router)
 
@@ -22,8 +23,12 @@ export default new Router({
           component: Use
         },
         {
-          path: '/list',
-          component: List
+          path: '/roles',
+          component: Roles
+        },
+        {
+          path: '/rights',
+          component: Rights
         }
       ]
     },

@@ -339,7 +339,7 @@ export default {
           method: "post",
           data: this.addForm
         });
-        console.log(res);
+        // console.log(res);
         if (res.data.meta.status === 201) {
           this.$message({
             message: res.data.meta.msg,
@@ -370,6 +370,8 @@ export default {
       let res = await this.$http({
         url: `users/${id}`
       });
+      // console.log(res);
+
       if (res.data.meta.status === 200) {
         this.editForm = res.data.data;
       }
@@ -421,7 +423,7 @@ export default {
       let res = await this.$http({
         url: "/roles"
       });
-      console.log(res);
+      // console.log(res);
       this.roles = res.data.data;
       console.log(this.roles);
     },
@@ -439,7 +441,7 @@ export default {
         url: `users/${this.allocateForm.id}/role`,
         method: "put"
       });
-      console.log(res);
+      // console.log(res);
       //  this.isAllocateRoles = true;
     }
   }
@@ -452,8 +454,5 @@ export default {
   line-height: 3;
   background-color: #d4dae0;
   padding-left: 10px;
-}
-.cell {
-  min-width: 500px;
 }
 </style>
