@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from './views/Login.vue'
-import Home from './views/Home.vue'
-import Use from './views/Use.vue'
-import Roles from './views/Roles.vue'
-import Rights from './views/Rights.vue'
+import Login from './views/Login/Login.vue'
+import Home from './views/Home/Home.vue'
+import Use from './views/Use/Use.vue'
+import Roles from './views//Roles/Roles.vue'
+import Rights from './views/Rights/Rights.vue'
 
 Vue.use(Router)
 
