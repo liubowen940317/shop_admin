@@ -115,13 +115,10 @@
           <el-tag type="info" v-text="allocateForm.username"></el-tag>
         </el-form-item>
         <el-form-item label="角色列表">
-          <el-select v-model="allocateForm.role" placeholder="请选择角色">
-            <el-option
-              v-for="item in roles"
-              :key="item.id"
-              :label="item.roleName"
-              :value="item.roleName"
-            ></el-option>
+          <el-select v-model="allocateForm.rid" placeholder="请选择角色">
+            <el-option v-for="item in roles" :key="item.id" :value="item.id" :label="item.roleName">
+              <!-- <template>{{item.roleName | optionFiltes}}</template> -->
+            </el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -246,7 +243,7 @@ export default {
           pagesize: this.pageSize
         }
       }).then(({ data: { data, meta } }) => {
-        console.log(data, meta);
+        // console.log(data, meta);
         if (meta.status === 200) {
           this.userList = data.users;
           this.total = data.total;
@@ -326,7 +323,7 @@ export default {
 
     // 增加用户的模态框打开
     addUserClick() {
-      console.log(111);
+      // console.log(111);
       this.isAddUser = true;
     },
     // 增加确认按钮
@@ -357,7 +354,7 @@ export default {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
 
@@ -423,26 +420,43 @@ export default {
       let res = await this.$http({
         url: "/roles"
       });
-      // console.log(res);
+
       this.roles = res.data.data;
-      console.log(this.roles);
+      // console.log(this.roles);
     },
 
     // 打开分配角色的模态框
-    allocateUser(row) {
+    async allocateUser(row) {
+      // console.log(row);
+
       this.isAllocateRoles = true;
-      console.log(row);
-      this.allocateForm.username = row.username;
+      const role = this.roles.find(item => item.roleName === row.role_name);
+      // 注意：admin用户的角色是 超级管理员 ，这个角色不在角色列表中，所以，需要判断 role是否存在，如果存在就获取 role.id；如果不存在，就设置默认值 ''
+      const rid = role ? role.id : "";
+      // console.log(rid)
+      console.log(rid);
       this.allocateForm.id = row.id;
+      this.allocateForm.username = row.username;
+      this.allocateForm.rid = rid;
     },
+
+    // 分配角色确认按钮
     async allocateRolesClick() {
       // console.log("确认");
       let res = await this.$http({
         url: `users/${this.allocateForm.id}/role`,
-        method: "put"
+        method: "put",
+        data: {
+          rid: this.allocateForm.rid
+        }
       });
       // console.log(res);
-      //  this.isAllocateRoles = true;
+      this.$message({
+        type: "success",
+        message: res.data.meta.msg,
+        duration: 1000
+      });
+      this.isAllocateRoles = false;
     }
   }
 };
