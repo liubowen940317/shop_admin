@@ -5,18 +5,35 @@
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-table :data="rolesList" stripe>
+    <el-table ref="roleTable" :data="rolesList" stripe>
       <el-table-column type="expand">
-        <template v-slot="{row}">
-          <el-row type="flex" v-for="level in row.children" :key="level.id" class="level1">
+        <template v-slot="{ row }">
+          <el-row
+            type="flex"
+            v-for="level in row.children"
+            :key="level.id"
+            class="level1"
+          >
             <el-col :span="6">
-              <el-tag closable>{{level.authName}}</el-tag>
+              <el-tag closable @close="deleteRoles(row, level.id)">{{
+                level.authName
+              }}</el-tag>
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <el-col>
-              <el-row type="flex" v-for="level2 in level.children" :key="level2.id" class="level2">
+              <el-row
+                type="flex"
+                v-for="level2 in level.children"
+                :key="level2.id"
+                class="level2"
+              >
                 <el-col :span="6">
-                  <el-tag type="success" closable>{{level2.authName}}</el-tag>
+                  <el-tag
+                    type="success"
+                    closable
+                    @close="deleteRoles(row, level2.id)"
+                    >{{ level2.authName }}</el-tag
+                  >
                   <i class="el-icon-arrow-right"></i>
                 </el-col>
                 <el-col>
@@ -26,7 +43,9 @@
                     class="level3"
                     type="warning"
                     closable
-                  >{{level3.authName}}</el-tag>
+                    @close="deleteRoles(row, level3.id)"
+                    >{{ level3.authName }}</el-tag
+                  >
                 </el-col>
               </el-row>
             </el-col>
@@ -37,16 +56,27 @@
       <el-table-column label="角色名称" prop="roleName"></el-table-column>
       <el-table-column label="描述" prop="roleDesc"></el-table-column>
       <el-table-column label="操作">
-        <template v-slot="{row}">
-          <el-button type="primary" plain icon="el-icon-edit" size="mini"></el-button>
-          <el-button type="danger" plain icon="el-icon-delete" size="mini"></el-button>
+        <template v-slot="{ row }">
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-edit"
+            size="mini"
+          ></el-button>
+          <el-button
+            type="danger"
+            plain
+            icon="el-icon-delete"
+            size="mini"
+          ></el-button>
           <el-button
             type="success"
             plain
             icon="el-icon-check"
             size="mini"
             @click="AssignRolesClick(row)"
-          >分配角色</el-button>
+            >分配角色</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -69,7 +99,6 @@
   </div>
 </template>
 
-
 <script>
 export default {
   data() {
@@ -90,12 +119,13 @@ export default {
   },
   methods: {
     // 请求角色列表
-    async getRolesList() {
+    async getRolesList(callback) {
       let res = await this.$http({
         url: "roles"
       });
-      // console.log(res);
+      console.log(res);
       this.rolesList = res.data.data;
+      callback && callback();
     },
 
     // 打开分配角色模态框
@@ -124,7 +154,7 @@ export default {
 
       // // 把所有的id放到这个数组中
       let checked = [...levelCheckedID];
-      console.log(checked);
+      // console.log(checked);
       // 2 调用 tree 中提供的 this.$refs.tree.setCheckedKeys([3]) 来选中节点
       //   参数是一个数组，数组中每一项就是 叶子节点 的key（ 也就是节点的id集合 ）
       /*
@@ -172,6 +202,42 @@ export default {
       });
       this.isAssignRolesShow = false;
       this.getRolesList();
+    },
+
+    // 删除单个权限
+    async deleteRoles(row, ridsId) {
+      console.log("删除成功");
+      // console.log('删除单个权限')
+      // 调用接口，删除当前角色指定的权限信息
+      // 接口信息
+      //  roles/:id/rights/:rightID
+      // method: delete
+      console.log(row);
+      // console.log(row.id, ridsId);
+      let res = await this.$http({
+        url: `roles/${row.id}/rights/${ridsId}`,
+        method: "delete"
+      });
+
+      if (res.data.meta.status == 200) {
+        this.$message({
+          type: "success",
+          message: res.data.meta.msg,
+          duration: 1000
+        });
+        // console.log(res);
+        this.getRolesList(() => {
+          this.$nextTick(() => {
+            //让表格对应的项展开即可
+            // console.log();
+            // toggleRowExpansion(row, expanded)用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开）
+            this.$refs.roleTable.toggleRowExpansion(
+              this.rolesList.find(v => v.id === row.id),
+              true
+            );
+          });
+        });
+      }
     }
   },
   created() {

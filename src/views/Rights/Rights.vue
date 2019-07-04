@@ -6,14 +6,23 @@
       <el-breadcrumb-item>权限列表</el-breadcrumb-item>
     </el-breadcrumb>
 
-    <el-table :data="rightsList" stripe style="width: 100%" :row-class-name="tableRowClassName">
+    <el-table
+      :data="rightsList"
+      stripe
+      style="width: 100%"
+      :row-class-name="tableRowClassName"
+    >
       <el-table-column type="index"></el-table-column>
-      <el-table-column prop="authName" label="权限名称" width="180"></el-table-column>
+      <el-table-column
+        prop="authName"
+        label="权限名称"
+        width="180"
+      ></el-table-column>
       <el-table-column prop="path" label="路径" width="180"></el-table-column>
       <el-table-column label="层级">
         <!-- prop="level" -->
-        <template v-slot="{row}">
-          <div>{{row.level | levelfilter}}</div>
+        <template v-slot="{ row }">
+          <div>{{ row.level | levelfilter }}</div>
         </template>
       </el-table-column>
     </el-table>
