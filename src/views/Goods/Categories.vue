@@ -57,10 +57,10 @@
     <!-- 添加分类模态框 -->
     <el-dialog title="添加分类" :visible.sync="isAddCategoryShow">
       <el-form ref="cateForm" :model="addCategoryForm" label-width="100px">
-        <el-form-item label="分类名称">
+        <el-form-item label="分类名称" prop="cate_name">
           <el-input v-model="addCategoryForm.cate_name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="父级名称">
+        <el-form-item label="父级名称" prop="parentArr">
           <el-cascader
             v-model="addCategoryForm.parentArr"
             :options="CateOptions"
@@ -184,11 +184,9 @@ export default {
         this.isAddCategoryShow = false;
 
         //   // 重置表单
-        //   this.$refs.cateForm.resetFields();
+        // 要重置表单必须 在el-form-item标签中添加prop属性
+        this.$refs.cateForm.resetFields();
 
-        // 重置表单
-        this.addCategoryForm.cate_name = "";
-        this.addCategoryForm.parentArr = [];
         // 重新获取数据
         this.getCategoriesList();
       }

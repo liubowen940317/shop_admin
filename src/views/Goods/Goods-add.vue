@@ -10,7 +10,7 @@
       <el-step title="第二步" description="商品图片"></el-step>
       <el-step title="第三步" description="商品内容"></el-step>
     </el-steps>
-    <el-tabs tab-position="left" style="margin-top:15px" @tab-click="tabClick" :value="activeName">
+    <el-tabs tab-position="left" style="margin-top:15px" @tab-click="tabClick" v-model="activeName">
       <el-tab-pane label="基本信息" name="basic">
         <el-form ref="form" :model="goodsAddList" label-width="80px">
           <el-form-item label="商品名称">
@@ -92,7 +92,7 @@ export default {
         // 以为','分割的分类列表 (字符串)
         catArr: [],
         // 是否促销
-        is_promote: 0,
+        is_promote: "0",
         // 介绍
         goods_introduce: "",
         // 上传的图片临时路径
